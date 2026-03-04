@@ -1,0 +1,291 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  /* Background Palette */
+  --obsidian: #0D0D12;
+  --slate-stone: #1A1A2E;
+  --carved-stone: #2A2A3E;
+  --worn-stone: #3A3A52;
+
+  /* Text Palette */
+  --ash: #6B6B8A;
+  --bone: #C8C8D4;
+  --parchment: #E8E4DC;
+  --pure-light: #F5F0E8;
+
+  /* Team Colors */
+  --team-green: #22C55E;
+  --team-green-glow: #4ADE80;
+  --team-green-dim: #166534;
+  --team-red: #EF4444;
+  --team-red-glow: #F87171;
+  --team-red-dim: #991B1B;
+  --team-yellow: #EAB308;
+  --team-yellow-glow: #FACC15;
+  --team-yellow-dim: #854D0E;
+  --team-blue: #3B82F6;
+  --team-blue-glow: #60A5FA;
+  --team-blue-dim: #1E3A8A;
+
+  /* Accent Colors */
+  --rune-gold: #D4A853;
+  --rune-gold-bright: #F0D078;
+  --magic-purple: #A855F7;
+  --magic-purple-glow: #C084FC;
+  --throw-orange: #F97316;
+  --throw-orange-bright: #FB923C;
+  --splut-red: #FF2D55;
+  --rock-granite: #78716C;
+  --rock-granite-light: #A8A29E;
+  --valid-move: #22D3EE;
+  --valid-move-dim: #0E7490;
+
+  --background: var(--obsidian);
+  --foreground: var(--parchment);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-obsidian: var(--obsidian);
+  --color-slate-stone: var(--slate-stone);
+  --color-carved-stone: var(--carved-stone);
+  --color-worn-stone: var(--worn-stone);
+  --color-ash: var(--ash);
+  --color-bone: var(--bone);
+  --color-parchment: var(--parchment);
+  --color-pure-light: var(--pure-light);
+  --color-rune-gold: var(--rune-gold);
+  --color-rune-gold-bright: var(--rune-gold-bright);
+  --color-magic-purple: var(--magic-purple);
+  --color-magic-purple-glow: var(--magic-purple-glow);
+  --color-throw-orange: var(--throw-orange);
+  --color-throw-orange-bright: var(--throw-orange-bright);
+  --color-splut-red: var(--splut-red);
+  --color-rock-granite: var(--rock-granite);
+  --color-rock-granite-light: var(--rock-granite-light);
+  --color-valid-move: var(--valid-move);
+  --color-valid-move-dim: var(--valid-move-dim);
+  --color-team-green: var(--team-green);
+  --color-team-green-glow: var(--team-green-glow);
+  --color-team-green-dim: var(--team-green-dim);
+  --color-team-red: var(--team-red);
+  --color-team-red-glow: var(--team-red-glow);
+  --color-team-red-dim: var(--team-red-dim);
+  --color-team-yellow: var(--team-yellow);
+  --color-team-yellow-glow: var(--team-yellow-glow);
+  --color-team-yellow-dim: var(--team-yellow-dim);
+  --color-team-blue: var(--team-blue);
+  --color-team-blue-glow: var(--team-blue-glow);
+  --color-team-blue-dim: var(--team-blue-dim);
+
+  --font-display: "Cinzel", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Mono", Consolas, monospace;
+
+  /* Named animations for Tailwind utility classes */
+  --animate-float-bob: float-bob 2s ease-in-out infinite;
+  --animate-splut-shake: splut-shake 300ms ease-out;
+  --animate-ai-thinking: ai-thinking 1.5s ease-in-out infinite;
+  --animate-particle-rise: particle-rise 20s linear infinite;
+  --animate-dash-flow: dash-flow 1s linear infinite;
+  --animate-pulse-glow: pulse-glow 1.5s ease-in-out infinite;
+  --animate-piece-settle: piece-settle 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-splut-flash: splut-flash 600ms ease-out;
+  --animate-slide-down: slide-down-in 250ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-slide-in-right: slide-in-right 200ms ease-out both;
+  --animate-game-over-entrance: game-over-entrance 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-shimmer: shimmer 3s linear infinite;
+  --animate-title-pulse: title-pulse 3s ease-in-out infinite;
+  --animate-celebration-rise: celebration-rise 3s ease-out infinite;
+  --animate-help-modal-in: help-modal-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+body {
+  background: var(--obsidian);
+  color: var(--parchment);
+  font-family: var(--font-body);
+  min-height: 100vh;
+}
+
+/* Board layout (no rotation — standard grid of squares) */
+.board-diamond {
+  /* No rotation — board displays as axis-aligned squares */
+}
+
+.board-diamond-counter {
+  /* No counter-rotation needed */
+}
+
+/* =========================================================================
+   Keyframes
+   ========================================================================= */
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes piece-settle {
+  0% { transform: scale(0.8); }
+  70% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes splut-flash {
+  0% { background-color: var(--splut-red); transform: scale(1.2); }
+  100% { background-color: transparent; transform: scale(1); }
+}
+
+@keyframes float-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes splut-shake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-2px, -1px); }
+  20% { transform: translate(3px, 1px); }
+  30% { transform: translate(-1px, 2px); }
+  40% { transform: translate(2px, -2px); }
+  50% { transform: translate(-3px, 1px); }
+  60% { transform: translate(1px, -1px); }
+  70% { transform: translate(-2px, 2px); }
+  80% { transform: translate(3px, 0); }
+  90% { transform: translate(-1px, -2px); }
+}
+
+@keyframes ai-thinking {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+@keyframes particle-rise {
+  0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+  10% { opacity: 0.15; }
+  90% { opacity: 0.15; }
+  100% { transform: translateY(-20px) scale(1); opacity: 0; }
+}
+
+@keyframes celebration-rise {
+  0% { transform: translateY(0) rotate(45deg) scale(0.5); opacity: 0; }
+  10% { opacity: 0.8; }
+  80% { opacity: 0.4; }
+  100% { transform: translateY(-200px) rotate(45deg) scale(1); opacity: 0; }
+}
+
+@keyframes dash-flow {
+  0% { stroke-dashoffset: 16; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes slide-down-in {
+  0% { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  0% { opacity: 0.6; transform: translateX(8px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes game-over-entrance {
+  0% { opacity: 0; transform: scale(0); }
+  70% { transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes title-pulse {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(212, 168, 83, 0.4), 0 0 40px rgba(212, 168, 83, 0.15);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(212, 168, 83, 0.7), 0 0 40px rgba(212, 168, 83, 0.3);
+  }
+}
+
+@keyframes title-assemble {
+  0% { opacity: 0; transform: translateY(-20px) scale(0.5); }
+  60% { opacity: 1; transform: translateY(2px) scale(1.05); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes help-modal-in {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes help-backdrop-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* =========================================================================
+   Custom scrollbar for action log
+   ========================================================================= */
+
+.action-log-scroll::-webkit-scrollbar { width: 4px; }
+.action-log-scroll::-webkit-scrollbar-track { background: var(--slate-stone); }
+.action-log-scroll::-webkit-scrollbar-thumb { background: var(--worn-stone); border-radius: 2px; }
+.action-log-scroll::-webkit-scrollbar-thumb:hover { background: var(--ash); }
+.action-log-scroll { scrollbar-width: thin; scrollbar-color: var(--worn-stone) var(--slate-stone); }
+
+/* Custom scrollbar for help modal content */
+.help-content-scroll::-webkit-scrollbar { width: 4px; }
+.help-content-scroll::-webkit-scrollbar-track { background: var(--slate-stone); }
+.help-content-scroll::-webkit-scrollbar-thumb { background: var(--worn-stone); border-radius: 2px; }
+.help-content-scroll::-webkit-scrollbar-thumb:hover { background: var(--ash); }
+.help-content-scroll { scrollbar-width: thin; scrollbar-color: var(--worn-stone) var(--slate-stone); }
+
+/* Help tab bar hidden scrollbar */
+.help-tab-bar::-webkit-scrollbar { display: none; }
+.help-tab-bar { scrollbar-width: none; }
+
+/* =========================================================================
+   Focus indicators (accessibility)
+   ========================================================================= */
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--rune-gold-bright);
+  outline-offset: 2px;
+}
+
+.focus-ring-inset:focus-visible {
+  outline: 2px solid var(--rune-gold-bright);
+  outline-offset: -2px;
+}
+
+/* =========================================================================
+   Reduced motion preference
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* =========================================================================
+   Visually hidden (screen-reader only)
+   ========================================================================= */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
