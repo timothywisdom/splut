@@ -50,6 +50,11 @@ interface AITurnState {
 
 export type GameScreen = 'lobby' | 'game'
 
+export interface HistorySnapshot {
+  game: GameState
+  actionLogLength: number
+}
+
 export interface PendingPullBack {
   trollId: string
   targetSquare: SquareKey
@@ -102,6 +107,9 @@ interface GameStore {
   // Action log
   actionLog: UILogEntry[]
 
+  // Undo history
+  gameHistory: HistorySnapshot[]
+
   // AI
   aiConfig: AIConfig
   aiTurnState: AITurnState | null
@@ -117,6 +125,7 @@ interface GameStore {
   confirmPullBack: (doPull: boolean) => void
   triggerAITurn: () => void
   cancelAITurn: () => void
+  undoLastMove: () => void
   resetGame: () => void
   setScreen: (screen: GameScreen) => void
 }
@@ -165,6 +174,37 @@ function computeValidMoveTargets(game: GameState, pieceId: string): SquareKey[] 
 }
 
 // ============================================================================
+// Undo: snapshot helper
+// ============================================================================
+
+function deepCloneGame(game: GameState): GameState {
+  return {
+    ...game,
+    pieces: new Map(Array.from(game.pieces.entries()).map(([k, v]) => [k, { ...v }])),
+    squareOccupancy: new Map(game.squareOccupancy),
+    players: game.players.map(p => ({ ...p })),
+    activePlayers: [...game.activePlayers],
+    turn: { ...game.turn, levitationState: game.turn.levitationState ? { ...game.turn.levitationState } : null },
+    previousTurnRockRecord: game.previousTurnRockRecord
+      ? { ...game.previousTurnRockRecord, movedRocks: game.previousTurnRockRecord.movedRocks.map(r => ({ ...r })) }
+      : null,
+    currentTurnRockRecord: {
+      ...game.currentTurnRockRecord,
+      movedRocks: game.currentTurnRockRecord.movedRocks.map(r => ({ ...r })),
+    },
+    lastThrowPath: [...game.lastThrowPath],
+  }
+}
+
+function pushSnapshot(get: () => GameStore, set: (partial: Partial<GameStore>) => void): void {
+  const { game, actionLog, gameHistory } = get()
+  if (!game) return
+  set({
+    gameHistory: [...gameHistory, { game: deepCloneGame(game), actionLogLength: actionLog.length }],
+  })
+}
+
+// ============================================================================
 // Store
 // ============================================================================
 
@@ -178,6 +218,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   levitateRockId: null,
   pendingPullBack: null,
   actionLog: [],
+  gameHistory: [],
   aiConfig: { moveDelayMs: 500 },
   aiTurnState: null,
   aiTimerId: null,
@@ -200,6 +241,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       levitateRockId: null,
       pendingPullBack: null,
       actionLog: [],
+      gameHistory: [],
       aiTurnState: null,
     })
 
@@ -355,6 +397,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!piece || piece.type === PieceType.Rock) return
     const pp = piece as PlayerPiece
     const fromSquare = pp.square
+
+    // Snapshot for undo (before any mutation — covers pull-back and normal moves)
+    pushSnapshot(get, set)
 
     // Check for Troll pull-back eligibility before executing the move
     if (pp.type === PieceType.Troll) {
@@ -543,6 +588,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!game || !game.turn.pendingThrow) return
     if (aiTurnState?.isExecuting) return
 
+    // Snapshot for undo
+    pushSnapshot(get, set)
+
     const currentSeat = game.turn.currentPlayerSeat
     const result = throwRock(game, dir)
     if (!result.ok) return
@@ -644,6 +692,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const { game } = get()
     if (!game || game.phase !== GamePhase.Playing) return
 
+    // Snapshot for undo (one snapshot for entire AI turn)
+    pushSnapshot(get, set)
+
     const moves = planAITurn(game)
     if (moves.length === 0) return
 
@@ -673,6 +724,33 @@ export const useGameStore = create<GameStore>((set, get) => ({
     })
   },
 
+  undoLastMove: () => {
+    const { gameHistory, game, aiTurnState } = get()
+    if (gameHistory.length === 0) return
+    if (game?.phase === GamePhase.Over) return
+    if (aiTurnState?.isExecuting) return
+
+    const snapshot = gameHistory[gameHistory.length - 1]
+    const { actionLog } = get()
+    const trimmedLog = actionLog.slice(0, snapshot.actionLogLength)
+
+    // Restore logEntryId to match trimmed log
+    logEntryId = trimmedLog.length > 0 ? trimmedLog[trimmedLog.length - 1].id : 0
+
+    set({
+      game: snapshot.game,
+      gameHistory: gameHistory.slice(0, -1),
+      actionLog: trimmedLog,
+      selectedPieceId: null,
+      validMoveTargets: [],
+      highlightedSquares: new Map(),
+      levitateRockId: null,
+      pendingPullBack: null,
+      aiTurnState: null,
+      aiTimerId: null,
+    })
+  },
+
   resetGame: () => {
     const { aiTimerId } = get()
     if (aiTimerId) clearTimeout(aiTimerId)
@@ -686,6 +764,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       levitateRockId: null,
       pendingPullBack: null,
       actionLog: [],
+      gameHistory: [],
       aiTurnState: null,
       aiTimerId: null,
     })

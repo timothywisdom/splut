@@ -105,6 +105,15 @@ export function getTeamCSSColor(seat: PlayerSeat): string {
   }
 }
 
+export function useCanUndo() {
+  return useGameStore((s) => {
+    if (s.gameHistory.length === 0) return false
+    if (s.game?.phase === GamePhase.Over) return false
+    if (s.aiTurnState?.isExecuting) return false
+    return true
+  })
+}
+
 export function getTeamCSSClass(seat: PlayerSeat): string {
   switch (seat) {
     case PlayerSeat.Top: return 'text-team-green'

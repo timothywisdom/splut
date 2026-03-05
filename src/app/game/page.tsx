@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import GameBoard from '@/components/game/GameBoard'
 import TurnBanner from '@/components/game/TurnBanner'
 import PlayerStatusPanel from '@/components/game/PlayerStatus'
@@ -18,9 +18,23 @@ import { GamePhase } from '@/engine/types'
 export default function GamePage() {
   const game = useGameStore((s) => s.game)
   const resetGame = useGameStore((s) => s.resetGame)
+  const undoLastMove = useGameStore((s) => s.undoLastMove)
   const [showMobileLog, setShowMobileLog] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const isGameOver = game?.phase === GamePhase.Over
+
+  // Ctrl+Z / Cmd+Z keyboard shortcut for undo
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+      e.preventDefault()
+      undoLastMove()
+    }
+  }, [undoLastMove])
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [handleKeyDown])
 
   if (!game) return null
 
@@ -34,9 +48,9 @@ export default function GamePage() {
         }}
       />
 
-      {/* Turn Banner */}
+      {/* Turn Banner (includes Lobby + Rules nav) */}
       <div className="relative z-10">
-        <TurnBanner />
+        <TurnBanner onLobby={resetGame} onUndo={undoLastMove} onShowHelp={() => setShowHelp(true)} />
       </div>
 
       {/* Main game area: three-column layout */}
@@ -84,45 +98,6 @@ export default function GamePage() {
       <div className="md:hidden relative z-10 flex gap-2 px-4 py-2 overflow-x-auto border-t border-carved-stone/50">
         <PlayerStatusPanel layout="horizontal" />
       </div>
-
-      {/* Back to lobby button */}
-      <button
-        onClick={resetGame}
-        className="fixed top-3 left-3 z-30 text-xs text-ash hover:text-bone transition-colors cursor-pointer focus-ring"
-      >
-        &larr; Lobby
-      </button>
-
-      {/* In-game Rules button */}
-      {!isGameOver && (
-        <button
-          onClick={() => setShowHelp(true)}
-          className="fixed top-3 right-3 z-30 inline-flex items-center gap-1.5 text-ash hover:text-bone transition-colors duration-150 cursor-pointer focus-ring"
-          style={{
-            padding: '8px 10px',
-            background: 'none',
-            border: 'none',
-            minWidth: '44px',
-            minHeight: '44px',
-          }}
-        >
-          {/* Question mark circle */}
-          <span
-            className="inline-flex items-center justify-center rounded-full"
-            style={{
-              width: '16px',
-              height: '16px',
-              border: '1.5px solid currentColor',
-              fontSize: '10px',
-              fontWeight: 600,
-              lineHeight: 1,
-            }}
-          >
-            ?
-          </span>
-          <span style={{ fontSize: '12px', fontWeight: 400 }}>Rules</span>
-        </button>
-      )}
 
       {/* Help Modal */}
       <HelpModal open={showHelp} onClose={() => setShowHelp(false)} />

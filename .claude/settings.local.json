@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -c \"^\\\\s*Scenario:\" /Users/tim.beamish/source/splut/features/*.feature)",
+      "Bash(npx create-next-app@latest:*)",
+      "Bash(npm install:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx next:*)",
+      "Bash(npx tsc:*)",
+      "Bash(wc:*)",
+      "WebSearch",
+      "Bash(npm run:*)"
+    ]
+  }
+}

@@ -27,7 +27,7 @@ export default function PlayerCountSelector({ value, onChange }: PlayerCountSele
               data-testid={`player-count-${count}`}
               onClick={() => onChange(count)}
               className={`
-                w-20 h-12 rounded-lg text-lg font-semibold transition-all duration-150 cursor-pointer
+                flex-1 h-12 rounded-lg text-lg font-semibold transition-all duration-150 cursor-pointer
                 ${
                   isSelected
                     ? 'bg-rune-gold/20 border-2 border-rune-gold-bright text-parchment shadow-[0_0_12px_rgba(212,168,83,0.2)]'
